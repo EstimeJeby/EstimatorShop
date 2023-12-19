@@ -1,0 +1,41 @@
+{% extends "blog/base.html" %}
+{% block content%}
+    <div class="container-f ">
+        <form method="POST" class="form-login mx-auto ">
+            {% csrf_token %}
+           
+                <h4 class="text-center mb-2">login</h4>
+                <div class="mb-1">
+                    <label class="form-label">username</label>
+                    <input type="name" class="form-control" name="username" id="username" placeholder="username" >
+
+                </div>
+                <div class="mb-1">
+                    <label class="form-label">password</label>
+                    <input type="password" class="form-control" name="password" id="pass1" placeholder="password" >
+
+                </div>
+           
+            <div class="needAccount">
+                <small class="text-muted">
+                    Need An Account? <a class="ml-2" href="{% url 'register' %}">Sign up</a>
+                </small>
+            </div>
+           
+            <div class="btn-div">
+                
+                <input type="submit" class="btn btn-primary " value="login" >
+
+            </div>
+            <div class="needAccount">
+                <small class="text-muted">
+                <a class="ml-2" href="{% url 'password_reset' %}">Forgot-Password ?</a>
+                </small>
+            </div>
+
+        </form>
+
+    </div>
+
+
+{%endblock content%}

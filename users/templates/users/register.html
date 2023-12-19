@@ -1,0 +1,34 @@
+{% extends "blog/base.html" %}
+{% load crispy_forms_tags %}
+{% block content%}
+    <div class="container-f">
+        <form method="POST" class="form-register mx-auto ">
+            {% csrf_token %}
+            
+            
+                <h4 class="text-center  mb-4 ">register</h4>
+
+                <div class="mb-1">
+                    {{form|crispy}}
+                </div>
+                
+                
+             
+            <div class="needAccoun">
+                <small class="text-muted">
+                    Already Have An Account? <a class="ml-2" href="{% url 'login' %}">login</a>
+                </small>
+            </div>
+            <div class="mb-1">
+                
+                <input type="submit" class="btn btn-primary" value="register" >
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+
+{%endblock content%}

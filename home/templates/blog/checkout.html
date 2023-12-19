@@ -1,0 +1,143 @@
+{% extends "blog/base.html" %}
+{% block content %}
+{% load static %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="box-element" id="form-wrapper">
+                <form action="" id="form">
+                    <div id="user-info">
+                        <div class="form-field">
+                            <input type="text" class="form-control" name="name" placeholder="name" required >
+                        </div>
+                        <div class="form-field">
+                            <input type="email" class="form-control" name="email" placeholder="email" required>
+                        </div>
+                    </div>
+
+                    <div id="shipping-info">
+                        <hr>
+                        <p>shipping-information</p>
+                        <hr>
+                        <div class="form-field">
+                            <input type="text" class="form-control" name="address" placeholder="address">
+                        </div>
+                        <div class="form-field">
+                            <input type="text" class="form-control" name="city" placeholder="city">
+                        </div>
+                        <div class="form-field">
+                            <input type="text" class="form-control" name="state" placeholder="state">
+                        </div>
+                        <div class="form-field">
+                            <input type="text" class="form-control" name="zipcode" placeholder="zipcode">
+                        </div>
+                    </div>
+
+                    <hr>
+                    <input type="submit"  class="btn btn-success btn-block "id="form-button" value="continue">
+                </form>
+            </div>
+            <br>
+            <div class="box-element hidden" id="payment-info">
+                <small>Paypal Option</small>
+                <button type="submit" id ="makePayment">Make payment</button>
+            </div>
+
+        </div>
+        <div class="col-lg-6">
+            <div class="box-element">
+                <a href="{% url 'cart'%}"class="btn btn-outline-dark">&#x2190; Go to cart</a>
+                <hr>
+                <h3>Order Summary</h3>
+                <hr>
+                {% for item in items %}
+                <div class="cart-row">
+                    <div style="flex:2"><img class="style="width='70px' height='70px'"" src="{{ item.Product.imageUrl}}" alt=""></div>
+                    <div style="flex:2">{{item.Product.name}}</div>
+                    <div style="flex:1">{{item.Product.prix}}</div>
+                    <div style="flex:1"><p>{{item.quantity}}</p></div>
+                </div>
+
+                {% endfor %}
+                <h5>Items: {{ order.get_cart_items }} </h5>
+                <h5>Total: {{ order.get_cart_total }}</h5>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var shipping = '{{ order.shipping }}'
+        var total ='{{order.get_cart_total}}'
+
+
+        if(shipping == 'False'){
+            document.getElementById('shipping-info').innerHTML = ''
+        }
+        if (user != 'AnonymousUser'){
+            document.getElementById('user-info').innerHTML=''
+        }
+        if(user != 'AnonymousUser' && shipping == 'False'){
+            // cache le form en entier if user loggin et shopping is false
+
+            document.getElementById('form-wrapper').classList.add('hidden')
+
+            document.getElementById('payment-info').classList.remove('hidden')
+        }
+        var form = document.getElementById('form')
+        form.addEventListener('submit', function(e){
+            e.preventDefault()
+            console.log('form submitted')
+            document.getElementById('form-button').classList.add('hidden')
+            document.getElementById('payment-info').classList.remove('hidden')
+        })
+
+        document.getElementById('makePayment').addEventListener('click', function(e){
+            submitFormData()
+        })
+        function submitFormData(){
+         var  userFormData ={
+            'name':null,
+            'email':null,
+            'total':total
+           }
+         var ShippingInfo ={
+            'address':null,
+            'city':null,
+            'state':null,
+            'zipcode':null,
+            'total':total
+           }
+
+           if (shipping != 'False'){
+            ShippingInfo.address = form.address.value
+            ShippingInfo.city = form.city.value
+            ShippingInfo.state = form.state.value
+            ShippingInfo.zipcode = form.zipcode.value
+           }
+
+           if ( user == 'AnonymouseUser'){
+            userFormData.name = form.name.value
+            userFormData.email = form.email.value
+
+           }
+
+           fetch('/process_order/',{
+            method:'POST',
+            headers:{
+                'content-Type':'application/json',
+                'X-CSRFToken':csrftoken
+            },
+            body:JSON.stringify({'form':userFormData, 'shipping':ShippingInfo})
+           })
+           .then((res) => res.json())
+           .then((data) => {
+            console.log('success:', data)
+            alert('Transaction was complete')
+            window.location.href= "{% url 'blog-home'%}"
+        })
+        }
+    </script>
+
+
+
+
+{% endblock content%}
